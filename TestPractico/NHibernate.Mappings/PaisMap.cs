@@ -1,7 +1,6 @@
 ﻿namespace NHibernate.Mappings
 {
     using Entities;
-    using Mapping.ByCode;
     using Mapping.ByCode.Conformist;
     
     public class PaisMap : ClassMapping<Pais>
