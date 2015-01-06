@@ -1,0 +1,17 @@
+<Project DefaultTargets="Error" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<ItemGroup>
+		<CreateTestPracticoDBScripts Include="$(WorkingDirectory)\SQL\DB\*.sql" />
+		<TestPracticoTableScripts Include="$(WorkingDirectory)\SQL\Tables\*.sql" /> 
+		<TestPracticoDataScripts Include="$(WorkingDirectory)\SQL\Data\*.sql" />
+	</ItemGroup>
+
+	<Target Name="CreateDB">
+		<ExecuteDDL ConnectionString="$(NoDBConnection)" Files="@(CreateTestPracticoDBScripts)" ContinueOnError="false" />
+		
+		<ExecuteDDL ConnectionString="$(TestPracticoConnection)" Files="@(TestPracticoTableScripts)" ContinueOnError="false" />
+		
+		<ExecuteDDL ConnectionString="$(TestPracticoConnection)" Files="@(TestPracticoDataScripts)" ContinueOnError="false" />
+	</Target>
+
+</Project>

@@ -2,3 +2,6 @@ bin
 obj
 *.suo
 _ReSharper.*
+TestPractico/NHibernate.Configuration/StyleCop.Cache
+*.Cache
+*.user

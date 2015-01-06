@@ -9,7 +9,7 @@
     <div class="navbar navbar-default">
             @foreach (Region region in Model.Regiones)
             {
-                <div class="region">
+                <div class="region @(region.Id == Model.RegionSeleccionada.Id ? "selected-item" : string.Empty)">
                     <div class="region-label" id="@(region.Id)">@(region.Nombre)</div>
                 </div>
             }
@@ -22,7 +22,7 @@
     <div class="detalles-region-container">
         <div class="paises">
             <div class="table-responsive">
-                <table id="paisesTable" data-toggle="table" data-url='@(Url.Action("GetPaises", "Home"))'>
+                <table id="paisesTable" data-toggle="table">
                     <thead>
                         <tr>
                             <th class="codigo" data-field="Codigo">Codigo</th>
@@ -71,7 +71,7 @@
                             <label><strong>Poblacion: </strong></label><label id="poblacion" class="color-blue">&nbsp;@Model.PaisSeleccionado.Poblacion</label>
                         </div>
                         <div>
-                            <label><strong>Provincias: </strong></label><label id="provincia" class="color-blue">&nbsp;@Model.PaisSeleccionado.Provincia</label>
+                            <label><strong>Provincias: </strong></label><label id="provincias" class="color-blue">&nbsp;@Model.PaisSeleccionado.Provincia</label>
                         </div>
                     </div>
                 </div>
@@ -95,18 +95,54 @@
             $(".region-label").click(function () {
                 $('.selected-item').removeClass('selected-item');
                 $(this).parent().addClass('selected-item');
-                $.ajax({
-                    dataType: 'json',
-                    type: 'POST',
-                    url: '@(Url.Action("GetPaisesFromRegion", "Home"))',
-                    data:
+                loadPaises(this.id);
+            });
+
+            loadPaises(@(Model.RegionSeleccionada.Id));
+        });
+
+        function loadPaises(idRegion) {
+            $.ajax({
+                dataType: 'json',
+                type: 'POST',
+                url: '@(Url.Action("GetPaisesByRegion", "Home"))',
+                data:
                     {
-                        idRegion: this.id
+                        idRegion: idRegion
                     }
-                }).done(function (data) {
-                    $('#paisesTable').bootstrapTable('load', data);
+            }).done(function (data) {
+                $('#paisesTable').bootstrapTable('load', data);
+                loadPaisData($('#paisesTable tr td').first().html());
+                
+                $("#paisesTable tbody tr").click(function() { 
+                    loadPaisData($(this).find('td').html());
                 });
             });
-        });
+        }
+        
+        function loadPaisData(codigo) {
+            $('#paisesTable .selected-item').removeClass('selected-item');
+            $('#paisesTable tr td').first().parent().addClass('selected-item');
+            
+            $.ajax({
+                dataType: 'json',
+                type: 'POST',
+                url: '@(Url.Action("GetPaisByCodigo", "Home"))',
+                data:
+                    {
+                        codigo: codigo
+                    }
+            }).done(function (data) {
+                $('#image').attr('src', data[0].Image);
+                $('#pais').html('&nbsp;' + data[0].Nombre);
+                $('#texto').html('&nbsp;' + data[0].Texto);
+                $('#capital').html('&nbsp;' + data[0].Capital);
+                $('#prefijoTel').html('&nbsp;' + data[0].PrefijoTel);
+                $('#presidente').html('&nbsp;' + data[0].Presidente);
+                $('#himno').html('&nbsp;' + data[0].Himno);
+                $('#poblacion').html('&nbsp;' + data[0].Poblacion);
+                $('#provincias').html('&nbsp;' + data[0].Provincias);
+            });
+        }
     </script>
 }

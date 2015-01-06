@@ -8,5 +8,7 @@
         IList<Pais> GetAllBy(Region region);
 
         IList<Pais> GetAll();
+
+        Pais GetBy(string codigo);
     }
 }
