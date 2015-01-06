@@ -1,0 +1,112 @@
+﻿@using Entities
+@using Web.Models
+@model HomeModel
+
+<div class="col-md-3">
+    <div>
+        <label>Regiones</label>
+    </div>
+    <div class="navbar navbar-default">
+            @foreach (Region region in Model.Regiones)
+            {
+                <div class="region">
+                    <div class="region-label" id="@(region.Id)">@(region.Nombre)</div>
+                </div>
+            }
+    </div>
+</div>
+<div class="col-md-9">
+    <div>
+        <label>Detalles de la Region</label>
+    </div>
+    <div class="detalles-region-container">
+        <div class="paises">
+            <div class="table-responsive">
+                <table id="paisesTable" data-toggle="table" data-url='@(Url.Action("GetPaises", "Home"))'>
+                    <thead>
+                        <tr>
+                            <th class="codigo" data-field="Codigo">Codigo</th>
+                            <th class="text-center" data-field="Region">Region</th>
+                            <th class="text-center" data-field="Pais">Pais</th>
+                            <th class="text-center" data-field="Poblacion">Poblacion</th>
+                            <th class="text-center" data-field="PBI">PBI</th>
+                            <th class="text-center pbicapita" data-field="PBICapita">PBI/Capita</th>
+                            <th class="text-center" data-field="Relevamiento">Relevamiento</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="detalle-label">
+            <label>Detalle Pais Seleccionado</label>
+        </div>
+        <div class="paises">
+            <div>
+                <div class="flag">
+                    <img class="image" id="image" height="100px" width="160px" alt="" src="@(Model.PaisSeleccionado.Image)" />
+                </div>
+                <div class="inline">
+                    <div class="descripcion">
+                        <div>
+                            <label id="pais" class="label-pais">@Model.PaisSeleccionado.Nombre</label>
+                        </div>
+                        <div>
+                            <label id="texto" class="label-texto">@Model.PaisSeleccionado.Texto</label>
+                        </div>
+                    </div>
+                    <div class="mas-info">
+                        <div>
+                            <label><strong>Capital: </strong></label><label id="capital" class="color-blue">&nbsp;@Model.PaisSeleccionado.Capital</label>
+                        </div>
+                        <div>
+                            <label><strong>Prefijo Telefonico: </strong></label><label id="prefijoTel" class="color-blue">&nbsp;@Model.PaisSeleccionado.PrefijoTel</label>
+                        </div>
+                        <div>
+                            <label><strong>Presidente: </strong></label><label id="presidente" class="color-blue">&nbsp;@Model.PaisSeleccionado.Presidente</label>
+                        </div>
+                        <div>
+                            <label><strong>Himno nacional: </strong></label><label id="himno" class="color-blue">&nbsp;@Model.PaisSeleccionado.Himno</label>
+                        </div>
+                        <div>
+                            <label><strong>Poblacion: </strong></label><label id="poblacion" class="color-blue">&nbsp;@Model.PaisSeleccionado.Poblacion</label>
+                        </div>
+                        <div>
+                            <label><strong>Provincias: </strong></label><label id="provincia" class="color-blue">&nbsp;@Model.PaisSeleccionado.Provincia</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section styles
+{
+    @Styles.Render("~/Content/jqgrid")
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqgrid")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".region-label").click(function () {
+                $('.selected-item').removeClass('selected-item');
+                $(this).parent().addClass('selected-item');
+                $.ajax({
+                    dataType: 'json',
+                    type: 'POST',
+                    url: '@(Url.Action("GetPaisesFromRegion", "Home"))',
+                    data:
+                    {
+                        idRegion: this.id
+                    }
+                }).done(function (data) {
+                    $('#paisesTable').bootstrapTable('load', data);
+                });
+            });
+        });
+    </script>
+}

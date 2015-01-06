@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+        <head>
+        <meta charset="utf-8" />
+        <title>Test Practico</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        @Styles.Render("~/Content/bootstrap")
+        @Styles.Render("~/Content/themes/custom-theme/css")
+        @RenderSection("styles", required: false)
+        @Styles.Render("~/Content/css")
+
+        @Scripts.Render("~/bundles/modernizr")
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body>
+        <header>
+        </header>
+        <div class="container">
+            @RenderBody()
+        </div>
+        <footer>
+            <div class="container">
+                <div class="btn-container">
+                    <input class="btn btn-primary btn-green width-100" type="button" value="Modificar" id="btnModificar" />
+                    <input class="btn btn-primary btn-red width-100" type="button" value="Eliminar" id="btnEliminar" />
+                </div>
+            </div>
+        </footer>
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/bootstrap")
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(document).ajaxError(function (event, xhr, settings) {
+                    $.showOkDialog({ title: 'Error', iconClass: 'ui-icon-alert', message: 'Se ha producido un error. Por favor contacte al administrador del sistema.' });
+                });
+
+                //BlockUI
+                var blockUITimer,
+                    blockUIDots = 0;
+                $.blockUI.defaults = $.extend($.blockUI.defaults, {
+                    message: 'Esta operación puede demorar. Espere por favor.',
+                    theme: true,
+                    draggable: false,
+                    title: 'Procesando',
+                    onBlock: function () {
+                        blockUITimer = setInterval(function () {
+                            $('.blockTitle').html('Procesando' + Array(blockUIDots + 1).join('.'));
+                            blockUIDots = blockUIDots < 3 ? blockUIDots + 1 : 0;
+                        }, 400);
+                    },
+                    onUnblock: function () {
+                        clearInterval(blockUITimer);
+                    }
+                });
+            });
+        </script>
+        @RenderSection("scripts", required: false)
+    </body>
+</html>
