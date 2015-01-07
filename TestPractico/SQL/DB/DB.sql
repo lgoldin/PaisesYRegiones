@@ -11,9 +11,9 @@ GO
 
 /****** Object:  Database [TestPractico]    Script Date: 01/06/2015 11:28:16 ******/
 CREATE DATABASE [TestPractico] ON  PRIMARY 
-( NAME = N'TestPractico', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL10.SQLEXPRESS\MSSQL\DATA\TestPractico.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
+( NAME = N'TestPractico', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL10_50.LOCALSQL2008\MSSQL\DATA\TestPractico.mdf' , SIZE = 3072KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
  LOG ON 
-( NAME = N'TestPractico_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL10.SQLEXPRESS\MSSQL\DATA\TestPractico_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+( NAME = N'TestPractico_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL10_50.LOCALSQL2008\MSSQL\DATA\TestPractico_log.ldf' , SIZE = 1024KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
 GO
 
 ALTER DATABASE [TestPractico] SET COMPATIBILITY_LEVEL = 100

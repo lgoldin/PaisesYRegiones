@@ -1,19 +1,23 @@
 ﻿namespace Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Web.Mvc;
     using Domain;
     using Entities;
     using Models;
-    using Repository;
 
     public class HomeController : Controller
     {
         public HomeController()
         {
-            this.RegionRepository = new RegionRepository();
-            this.PaisRepository = new PaisRepository();
+        }
+
+        public HomeController(IRegionRepository regionRepository, IPaisRepository paisRepository)
+        {
+            this.RegionRepository = regionRepository;
+            this.PaisRepository = paisRepository;
         }
 
         public IRegionRepository RegionRepository { get; set; }
@@ -26,7 +30,7 @@
 
             IList<Region> regiones = this.RegionRepository.GetAll();
             Region region = regiones.First();
-            Pais pais = region.Paises.First();
+            Pais pais = region.Paises.FirstOrDefault();
 
             return this.View(new HomeModel { Regiones = regiones, PaisSeleccionado = pais, RegionSeleccionada = region });
         }
@@ -42,10 +46,10 @@
                                Codigo = item.Codigo,
                                Region = item.Region.Nombre,
                                Pais = item.Nombre,
-                               Poblacion = item.Poblacion.HasValue ? item.Poblacion.Value.ToString("N2") : "NHI",
-                               PBI = item.PBI.HasValue ? item.PBI.Value.ToString("N2") : "NHI",
+                               Poblacion = item.Poblacion.HasValue ? (item.Poblacion.Value / 1000000).ToString("N2") : "NHI",
+                               PBI = item.PBI.HasValue ? (Math.Round(item.PBI.Value / 1000, 0) * 1000).ToString("N0") : "NHI",
                                PBICapita = item.Poblacion.HasValue && item.PBI.HasValue ? (item.PBI.Value / item.Poblacion.Value).ToString("N2") : "NHI",
-                               Relevamiento = item.FechaRelevamiento.ToShortDateString()
+                               Relevamiento = item.FechaRelevamiento.ToString("MM/dd/yyyy")
                            };
 
             return this.Json(jsonData, JsonRequestBehavior.DenyGet);
@@ -55,8 +59,9 @@
         public JsonResult GetPaisByCodigo(string codigo)
         {
             Pais pais = this.PaisRepository.GetBy(codigo);
-
-            var jsonData = from item in new List<Pais> { pais }
+            
+            var paises = pais != null ? new List<Pais> { pais } : new List<Pais>();
+            var jsonData = from item in paises
                            select new
                            {
                                Codigo = item.Codigo,
@@ -67,30 +72,70 @@
                                PrefijoTel = item.PrefijoTel,
                                Presidente = item.Presidente,
                                Himno = item.Himno,
-                               Poblacion = item.Poblacion.HasValue ? item.Poblacion.Value.ToString("N2") : "NHI",
+                               Poblacion = item.Poblacion.HasValue ? string.Format("{0} millones ({1})", (item.Poblacion.Value / 1000000).ToString("N2"), item.FechaRelevamiento.ToString("yyyy")) : "NHI",
                                Provincias = item.Provincia
                            };
 
             return this.Json(jsonData, JsonRequestBehavior.DenyGet);
         }
 
-        public JsonResult GetPaises()
+        [HttpPost]
+        public JsonResult EliminarPaisByCodigo(string codigo)
         {
-            IList<Pais> paises = this.PaisRepository.GetAll();
+            if (string.IsNullOrEmpty(codigo) || codigo.Length != 2)
+            {
+                return this.Json(new { success = false, message = "No hay ningun pais para borrar" }, JsonRequestBehavior.DenyGet);
+            }
 
-            var jsonData = from item in paises
-                           select new
-                           {
-                               Codigo = item.Codigo,
-                               Region = item.Region.Nombre,
-                               Pais = item.Nombre,
-                               Poblacion = item.Poblacion.HasValue ? item.Poblacion.Value.ToString("N2") : "NHI",
-                               PBI = item.PBI.HasValue ? item.PBI.Value.ToString("N2") : "NHI",
-                               PBICapita = item.Poblacion.HasValue && item.PBI.HasValue ? (item.PBI.Value / item.Poblacion.Value).ToString("N2") : "NHI",
-                               Relevamiento = item.FechaRelevamiento.ToShortDateString()
-                           };
+            Pais pais = this.PaisRepository.GetBy(codigo);
+            
+            Region region = pais.Region;
 
-            return this.Json(jsonData, JsonRequestBehavior.AllowGet);
+            this.PaisRepository.Delete(pais);
+
+            return this.Json(new { success = true, idRegion = region.Id }, JsonRequestBehavior.DenyGet);
+        }
+
+        [HttpPost]
+        public ActionResult ModificarPais(string codigo)
+        {
+            Pais pais = this.PaisRepository.GetBy(codigo);
+
+            var model = new PaisModel
+                            {
+                                Codigo = pais.Codigo,
+                                Capital = pais.Capital,
+                                PrefijoTel = pais.PrefijoTel,
+                                Presidente = pais.Presidente,
+                                Himno = pais.Himno,
+                                Poblacion = pais.Poblacion,
+                                Provincia = pais.Provincia,
+                                Texto = pais.Texto
+                            };
+
+            return this.PartialView("ModificarPais", model);
+        }
+
+        [HttpPost]
+        public JsonResult UpdatePais(PaisModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Pais pais = this.PaisRepository.GetBy(model.Codigo);
+                pais.Capital = model.Capital;
+                pais.PrefijoTel = model.PrefijoTel;
+                pais.Presidente = model.Presidente;
+                pais.Himno = model.Himno;
+                pais.Poblacion = model.Poblacion;
+                pais.Provincia = model.Provincia;
+                pais.Texto = model.Texto;
+
+                this.PaisRepository.Update(pais);
+
+                return this.Json(new { success = true, idRegion = pais.Region.Id }, JsonRequestBehavior.DenyGet);
+            }
+
+            return this.Json(new { success = false }, JsonRequestBehavior.DenyGet);
         }
     }
 }

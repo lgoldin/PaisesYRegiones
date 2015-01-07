@@ -1,0 +1,55 @@
+﻿@model Web.Models.PaisModel
+
+@using (Html.BeginForm("UpdatePais", "Home", FormMethod.Post, new { id = "frmModificarPais" }))
+{
+    <div class="form-container">
+        @Html.HiddenFor(x => x.Codigo, new { id = "hiddenCodigo" })
+
+        <div class="field">
+            @Html.LabelFor(x => x.Capital)
+            @Html.TextBoxFor(x => x.Capital, new { id = "txtCapital" })
+            @Html.ValidationMessageFor(x => x.Capital)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.PrefijoTel)
+            @Html.TextBoxFor(x => x.PrefijoTel, new { id = "txtPrefijoTel" })
+            @Html.ValidationMessageFor(x => x.PrefijoTel)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.Presidente)
+            @Html.TextBoxFor(x => x.Presidente, new { id = "txtPresidente" })
+            @Html.ValidationMessageFor(x => x.Presidente)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.Himno)
+            @Html.TextBoxFor(x => x.Himno, new { id = "txtHimno" })
+            @Html.ValidationMessageFor(x => x.Himno)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.Poblacion)
+            @Html.TextBoxFor(x => x.Poblacion, new { id = "txtPoblacion", @class = "dot-to-comma" })
+            @Html.ValidationMessageFor(x => x.Poblacion)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.Provincia)
+            @Html.TextBoxFor(x => x.Provincia, new { id = "txtProvincia" })
+            @Html.ValidationMessageFor(x => x.Provincia)
+        </div>
+        <div class="field">
+            @Html.LabelFor(x => x.Texto)
+            @Html.TextBoxFor(x => x.Texto, new { id = "txtTexto" })
+            @Html.ValidationMessageFor(x => x.Texto)
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $('#frmModificarPais .dot-to-comma').keyup(function () {
+        $(this).val($(this).val().replace('.', ','));
+    });
+    
+    $.validator.defaults.ignore = ":hidden";
+    $('form').removeData('validator');
+    $('form').removeData('unobtrusiveValidation');
+    $.validator.unobtrusive.parse('#frmModificarPais');
+</script>

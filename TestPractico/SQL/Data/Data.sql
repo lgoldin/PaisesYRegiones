@@ -314,3 +314,5 @@ VALUES
 	''
 )
 GO
+
+UPDATE pais SET pbi = pbi * poblacion

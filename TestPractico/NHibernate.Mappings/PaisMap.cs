@@ -12,7 +12,7 @@
             this.Property(x => x.Capital, map => map.NotNullable(true));
             this.Property(x => x.FechaRelevamiento, map => map.NotNullable(true));
             this.Property(x => x.Himno, map => map.NotNullable(true));
-            this.Property(x => x.Image, map => map.NotNullable(true));
+            this.Property(x => x.Image, map => { map.Length(int.MaxValue); map.NotNullable(true); });
             this.Property(x => x.Nombre, map => map.NotNullable(true));
             this.Property(x => x.PBI, map => map.NotNullable(false));
             this.Property(x => x.Poblacion, map => map.NotNullable(false));

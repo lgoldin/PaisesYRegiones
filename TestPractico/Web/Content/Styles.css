@@ -12,6 +12,39 @@ body
     background-image: linear-gradient(top, #008B8B, #00008B);
 }
 
+.no-close .ui-dialog-titlebar-close
+{
+    display: none;
+}
+
+.ui-dialog-titlebar 
+{
+    background-color: #002C83 !important;
+}
+
+.ui-dialog-title
+{
+    color: #FFFFFF !important;
+}
+
+.ui-dialog-content
+{
+    padding: 10px !important;
+    display: block !important;
+}
+
+.ui-widget-overlay.ui-front 
+{
+    position: fixed !important;
+}
+
+.blockUI .blockTitle
+{
+    font-size: 18px;
+    color: #FFF;
+    font-weight: bold;
+}
+
 .container
 {
     background-color: white;
@@ -211,4 +244,142 @@ table tbody tr
 .width-100
 {
     width: 100px !important;
+}
+
+.form-container
+{
+    margin-top: 10px;
+}
+
+.form-container .field
+{
+    margin: 10px 0;
+}
+
+.form-container .field label
+{
+    width: 200px;
+    margin: 0 20px 0 0;
+    line-height: 18px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.form-container .field input,.form-container .field select, .form-container .field textarea
+{
+    color: #000;
+    width: 300px;
+    max-width: 300px;
+    padding: 4px;
+    font-size: 13px;
+    line-height: 18px;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    -ms-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.form-container .field input[type="radio"]
+{
+    width: auto;
+}
+
+.form-container .field input[readonly],.form-container .field select[readonly],.form-container .field select[disabled], .form-container .field textarea[readonly]
+{
+    color: #808080;
+    background-color: #FBFBFB;
+} 
+
+.form-container .field .field-container
+{
+    width: 300px;
+    max-width: 300px;
+    padding: 4px;
+    display: inline-block;
+}
+
+.form-container .field .field-container label
+{
+    width: 100px;
+}
+
+.form-container .field .field-container.large label
+{
+    width: 250px;
+}
+
+.form-container input[type="checkbox"]
+{
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -ms-box-shadow: none;
+    box-shadow: none;
+}
+
+.input-validation-error 
+{
+    border: 1px solid #F00 !important;
+}
+
+.form-container .field .input-validation-error
+{
+    border: 1px solid #F00;
+}
+
+.form-container .field .field-validation-error
+{
+    color: #F00;
+    font-size: 12px;
+    margin: 0 10px;
+}
+
+.form-container .col-md-6 .field .field-validation-error,.ui-dialog .form-container .field .field-validation-error
+{
+    float: right;
+    width: 100%;
+    text-align: right;
+    padding-right: 5px;
+    margin-bottom: 10px;
+}
+
+.form-container legend
+{
+    padding-top: 20px;
+    margin-bottom: 10px;
+}
+
+.btn-container
+{
+    margin: 10px 5px;
+}
+
+.btn-container input, .btn-container button
+{
+    margin: 0 10px 0 0;
+}
+
+.ui-jqdialog {
+    border-color: #000000;    
+}
+
+.ui-jqdialog-titlebar.ui-widget-header {
+    background-color: #002C83;
+    color: #FFFFFF;
+}
+
+.ui-jqdialog-titlebar.ui-widget-header .ui-icon {
+    background-image: url(themes/custom-theme/images/ui-icons_FFFFFF_256x240.png);
+}
+
+.ui-jqdialog-titlebar.ui-widget-header .ui-state-hover .ui-icon {
+    background-image: url(themes/custom-theme/images/ui-icons_888888_256x240.png);
+}
+
+.ui-jqdialog-content, .ui-jqdialog .ui-jqdialog-content {
+    background-color: #EFEFEF;
 }

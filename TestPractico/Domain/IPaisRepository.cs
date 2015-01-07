@@ -7,8 +7,10 @@
     {
         IList<Pais> GetAllBy(Region region);
 
-        IList<Pais> GetAll();
-
         Pais GetBy(string codigo);
+
+        void Delete(Pais pais);
+
+        void Update(Pais pais);
     }
 }

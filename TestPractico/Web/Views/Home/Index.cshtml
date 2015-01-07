@@ -43,35 +43,35 @@
         <div class="paises">
             <div>
                 <div class="flag">
-                    <img class="image" id="image" height="100px" width="160px" alt="" src="@(Model.PaisSeleccionado.Image)" />
+                    <img class="image" id="image" height="100px" width="160px" alt="" src="" />
                 </div>
                 <div class="inline">
                     <div class="descripcion">
                         <div>
-                            <label id="pais" class="label-pais">@Model.PaisSeleccionado.Nombre</label>
+                            <label id="pais" class="label-pais"></label>
                         </div>
                         <div>
-                            <label id="texto" class="label-texto">@Model.PaisSeleccionado.Texto</label>
+                            <label id="texto" class="label-texto"></label>
                         </div>
                     </div>
                     <div class="mas-info">
                         <div>
-                            <label><strong>Capital: </strong></label><label id="capital" class="color-blue">&nbsp;@Model.PaisSeleccionado.Capital</label>
+                            <label><strong>Capital: </strong></label><label id="capital" class="color-blue"></label>
                         </div>
                         <div>
-                            <label><strong>Prefijo Telefonico: </strong></label><label id="prefijoTel" class="color-blue">&nbsp;@Model.PaisSeleccionado.PrefijoTel</label>
+                            <label><strong>Prefijo Telefonico: </strong></label><label id="prefijoTel" class="color-blue"></label>
                         </div>
                         <div>
-                            <label><strong>Presidente: </strong></label><label id="presidente" class="color-blue">&nbsp;@Model.PaisSeleccionado.Presidente</label>
+                            <label><strong>Presidente: </strong></label><label id="presidente" class="color-blue"></label>
                         </div>
                         <div>
-                            <label><strong>Himno nacional: </strong></label><label id="himno" class="color-blue">&nbsp;@Model.PaisSeleccionado.Himno</label>
+                            <label><strong>Himno nacional: </strong></label><label id="himno" class="color-blue"></label>
                         </div>
                         <div>
-                            <label><strong>Poblacion: </strong></label><label id="poblacion" class="color-blue">&nbsp;@Model.PaisSeleccionado.Poblacion</label>
+                            <label><strong>Poblacion: </strong></label><label id="poblacion" class="color-blue"></label>
                         </div>
                         <div>
-                            <label><strong>Provincias: </strong></label><label id="provincias" class="color-blue">&nbsp;@Model.PaisSeleccionado.Provincia</label>
+                            <label><strong>Provincias: </strong></label><label id="provincias" class="color-blue"></label>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
         </div>
     </div>
 </div>
-
+<div id="ModificarPaisDialog" style="display: none;"></div>
 
 @section styles
 {
@@ -88,6 +88,7 @@
 
 @section scripts
 {
+    @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/jqgrid")
 
     <script type="text/javascript">
@@ -99,6 +100,87 @@
             });
 
             loadPaises(@(Model.RegionSeleccionada.Id));
+
+            $("#btnEliminar").click(function() {
+                eliminar($('#paisesTable .selected-item').find('td').html());
+            });
+            
+            $(".dot-to-comma").keyup(function() {
+                $(this).val($(this).val().replace('.', ','));
+            });
+            
+            $.validator.methods.range = function(value, element, param) {
+                var globalizedValue = value.replace(",", ".");
+                return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+            };
+
+            $.validator.methods.number = function(value, element) {
+                return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/ .test(value);
+            };
+            
+            $("#ModificarPaisDialog").dialog({
+                autoOpen: false,
+                resizable: false,
+                draggable: false,
+                modal: true,
+                title: '',
+                dialogClass: 'no-close',
+                width: 568,
+                buttons: [{
+                    id: 'btnGuardarModificarPais',
+                    text: 'Guardar',
+                    'class': 'btn btn-primary btn-green',
+                    click: function() {
+                        if ($('#frmModificarPais').valid()) {
+                            $.ajax({
+                                dataType: 'json',
+                                type: 'POST',
+                                url: '@Url.Action("UpdatePais", "Home")',
+                                data: {
+                                    Codigo: $('#hiddenCodigo').val(),
+                                    Capital: $('#txtCapital').val(),
+                                    PrefijoTel: $('#txtPrefijoTel').val(),
+                                    Presidente: $('#txtPresidente').val(),
+                                    Himno: $('#txtHimno').val(),
+                                    Poblacion: $('#txtPrefijoTel').val() ? $('#txtPoblacion').val() : null,
+                                    Provincia: $('#txtProvincia').val(),
+                                    Texto: $('#txtTexto').val()
+                                }
+                            }).done(function(data) {
+                                if (data.success) {
+                                    $.showOkDialog({ message: 'La modificacion fue exitosa', title: 'Success', iconClass: 'ui-icon-alert' });
+                                    $('#ModificarPaisDialog').dialog("close");
+                                    loadPaises(data.idRegion);
+                                } else {
+                                    $.showOkDialog({ message: 'Verifique los datos ingresados', title: 'Error', iconClass: 'ui-icon-alert' });
+                                }
+                            });
+                        }
+                    }
+                }, {
+                    id: 'btnCancelarModificarPais',
+                    text: 'Cancelar',
+                    'class': 'btn btn-primary btn-red',
+                    click: function() {
+                        $(this).dialog('close');
+                    }
+                }],
+                open: function() {
+                    $.validator.defaults.ignore = ":hidden";
+                    $('form').removeData('validator');
+                    $('form').removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse('#frmModificarPais');
+                }
+            });
+
+            $('#btnModificar').click(function() {
+                $('#ModificarPaisDialog').load('@Url.Action("ModificarPais", "Home")', {
+                    codigo: $('#paisesTable .selected-item').find('td').html()
+                }, function() {
+                    $('#ModificarPaisDialog').dialog('option', 'title', 'Modificar Pais');
+                    $('#ModificarPaisDialog').dialog('open');
+                });
+            });
         });
 
         function loadPaises(idRegion) {
@@ -115,33 +197,72 @@
                 loadPaisData($('#paisesTable tr td').first().html());
                 
                 $("#paisesTable tbody tr").click(function() { 
-                    loadPaisData($(this).find('td').html());
+                    loadPaisData($(this).find('td').html(), $(this));
                 });
             });
         }
         
-        function loadPaisData(codigo) {
+        function loadPaisData(codigo, itemASeleccionar) {
             $('#paisesTable .selected-item').removeClass('selected-item');
-            $('#paisesTable tr td').first().parent().addClass('selected-item');
+            
+            if (itemASeleccionar) {
+                itemASeleccionar.addClass('selected-item');
+            } else {
+                $('#paisesTable tr td').first().parent().addClass('selected-item');
+            }
             
             $.ajax({
                 dataType: 'json',
                 type: 'POST',
                 url: '@(Url.Action("GetPaisByCodigo", "Home"))',
-                data:
-                    {
-                        codigo: codigo
-                    }
+                data: { codigo: codigo }
             }).done(function (data) {
-                $('#image').attr('src', data[0].Image);
-                $('#pais').html('&nbsp;' + data[0].Nombre);
-                $('#texto').html('&nbsp;' + data[0].Texto);
-                $('#capital').html('&nbsp;' + data[0].Capital);
-                $('#prefijoTel').html('&nbsp;' + data[0].PrefijoTel);
-                $('#presidente').html('&nbsp;' + data[0].Presidente);
-                $('#himno').html('&nbsp;' + data[0].Himno);
-                $('#poblacion').html('&nbsp;' + data[0].Poblacion);
-                $('#provincias').html('&nbsp;' + data[0].Provincias);
+                if (data && data[0]){
+                    $('.flag').show();
+                    $('.descripcion').show();
+                    $('.mas-info').show();
+                    
+                    $('#image').attr('src', data[0].Image);
+                    $('#pais').html('&nbsp;' + data[0].Nombre);
+                    $('#texto').html(data[0].Texto);
+                    $('#capital').html('&nbsp;' + data[0].Capital);
+                    $('#prefijoTel').html('&nbsp;' + data[0].PrefijoTel);
+                    $('#presidente').html('&nbsp;' + data[0].Presidente);
+                    $('#himno').html('&nbsp;' + data[0].Himno);
+                    $('#poblacion').html('&nbsp;' + data[0].Poblacion);
+                    $('#provincias').html('&nbsp;' + data[0].Provincias);
+                } else {
+                    $('.flag').hide();
+                    $('.descripcion').hide();
+                    $('.mas-info').hide();
+                }
+            });
+        }
+        
+        function eliminar(codigo) {
+            $.showYesNoDialog({
+                title: 'Eliminar Pais',
+                message: '¿Está seguro que desea eliminar el pais?',
+                iconClass: 'ui-icon-alert',
+                onYesClick: function() {
+                    $.blockUI();
+                    $.ajax({
+                        dataType: 'json',
+                        type: 'POST',
+                        url: '@Url.Action("EliminarPaisByCodigo", "Home")',
+                        data: { codigo: codigo }
+                    }).done(function(data) {
+                        $.unblockUI();
+                        if (data.success) {
+
+                            loadPaises(data.idRegion);
+                            $('.ui-yesnodialog').dialog('close');
+                        }else {
+                            $.showOkDialog({ message: data.message, title: 'Error', iconClass: 'ui-icon-alert' });
+                            $('.ui-yesnodialog').dialog('close');
+                        }
+                    });
+                }
             });
         }
     </script>
